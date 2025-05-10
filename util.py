@@ -12,7 +12,7 @@ true = True
 false = False
 
 def catch_traffic() -> Packet:
-    pkt = sniff(iface = "Software Loopback Interface 1", count = 1)
+    pkt = sniff(iface = "lo", count = 1)
     return pkt[0]
 
 
@@ -38,14 +38,14 @@ def isValidPackage(data) -> bool:
         raise InvalidKNXPacketError
 
 def getSource(data) -> str:
-    secondByte = int.from_bytes(data[1])
-    thirdByte = int.from_bytes(data[2])
+    secondByte = data[1]
+    thirdByte = data[2]
     source = str(secondByte) + "." + str(thirdByte)
     return source
 
 def getDestination(data) -> str:
-    fourthByte = int.from_bytes(data[3])
-    fifthByte = int.from_bytes(data[4])
+    fourthByte = data[3]
+    fifthByte = data[4]
     destination = str(fourthByte) + "." + str(fifthByte)
     return destination
 
@@ -55,3 +55,28 @@ def messageIsAck(data) -> bool:
         return true
     else:
         return false
+
+def calculateChecksum(data) -> bytearray:
+    checksum = 0
+    for byte in data[:-1]:
+        checksum ^= byte
+    return checksum
+
+def obtainChecksum(data) -> bytearray:
+    return data[-1]
+
+def frameIsSecure(data) -> bool:
+    #TODO: Code actuall check
+    return true
+
+def getHopCount(data) -> int:
+    return data[5] >> 4
+
+def getDataFromStandardPackage(data):
+    return data[6:-1]
+
+def checksumIsValid(data) -> bool:
+    if calculateChecksum(data) == obtainChecksum(data):
+        return True
+    else:
+        return False

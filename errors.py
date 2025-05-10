@@ -3,3 +3,6 @@ class NotAPacketError(Exception):
 
 class InvalidKNXPacketError(Exception):
     pass
+
+class InvalidChecksumError(Exception):
+    pass
