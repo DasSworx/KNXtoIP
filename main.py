@@ -18,11 +18,7 @@ while True:
         print("No payload found in UDP-package")
 
     if packetData in globals():
-        try:
-            u.isValidPackage(packetData)
-        except e.InvalidKNXPacketError:
-            print("Not a KNX package")
-            continue
+
         #standart message:
         if u.isStandartFrame(packetData):
             if

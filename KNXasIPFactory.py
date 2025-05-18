@@ -2,6 +2,7 @@ from scapy.layers.inet import IP, TCP
 from scapy.packet import Packet
 import util as u
 import errors as err
+from util import false, true
 
 """
 src, dst sind Strings mit Punktschreibweise
@@ -27,7 +28,7 @@ def KNXasIP(src, dst, TTL, checksumIsValid, isAck, data) -> Packet:
 
 
 def convertKNXtoIP(knx_package) -> Packet:
-    if u.isValidPackage(knx_package):
+    if u.isL_DataFrame(knx_package):
         if u.isStandartFrame(knx_package):
             if u.isSecureFrame():
                 #TODO: DataSecurePackets
@@ -37,13 +38,12 @@ def convertKNXtoIP(knx_package) -> Packet:
                 dst = networkInterface + u.getDestination(knx_package)
                 TTL = u.getHopCount(knx_package)
                 checksumIsCorrect = u.checksumIsValid(knx_package)
-                isAck = u.messageIsAck(knx_package)
-                data = u. getDataFromStandardPackage(knx_package)
-                return KNXasIP(src, dst, TTL, checksumIsCorrect, isAck, data)
+                data = u.getDataFromStandardPackage(knx_package)
+                return KNXasIP(src, dst, TTL, checksumIsCorrect, false, data)
 
         else:
             print("Package is a Extended Frame")
             #TODO: Extended packets
     else:
-        print("Wasnt a knxPackage")
-        raise err.NotAPacketError
+        #TODO: check for L_POLL and ack
+        print("Wasnt a L_Data_Frame")

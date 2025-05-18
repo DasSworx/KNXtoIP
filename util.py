@@ -23,19 +23,48 @@ def obtain_payload(package) -> bytearray:
     else:
         raise NotAPacketError
 
-def isStandartFrame(data) -> bool:
-    firstByte = data[0]
-    if((firstByte >> 6) & 1) == 0: #Test if second bit is 0 for standart package
+def isL_DataFrame(knx_frame):
+    first_byte = knx_frame[0]
+    if ((first_byte >> 4) & 1) == 0:
+        print("knx_frame is ack")
+        return false
+    elif ((first_byte >> 6) & 1) == 1:
+        print("knx_frame is L_Poll frame")
+        return false
+    else:
+        return true
+
+def isL_PollFrame(knx_frame):
+    first_byte = knx_frame[0]
+    if ((first_byte >> 4) & 1) == 0:
+        print("knx_frame is ack")
+        return false
+    elif ((first_byte >> 6) & 1) == 0:
+        print("knx_frame is L_Data frame")
+        return false
+    else:
+        return true
+
+def isAckFrame(knx_frame):
+    first_byte = knx_frame[0]
+    if ((first_byte >> 4) & 1) == 0:
         return true
     else:
         return false
 
-def isValidPackage(data) -> bool:
-    firstByte = data[0]
-    if (((firstByte >> 7) & 1) == 1):  # Test if first bit is 1 (as it needs to be for all KNX packages)
+def isStandartFrame(L_Data_Frame) -> bool:
+    firstByte = L_Data_Frame[0]
+    if((firstByte >> 7) & 1) == 1: #Test if first bit is 0 for standart package
         return true
     else:
-        raise InvalidKNXPacketError
+        return false
+
+def isExtendedFrame(L_DataFrame):
+    firstByte = L_DataFrame[0]
+    if ((firstByte >> 7) & 1) == 0:
+        return true
+    else:
+        return false
 
 def getSource(data) -> str:
     secondByte = data[1]
@@ -60,13 +89,14 @@ def calculateChecksum(data) -> bytearray:
     checksum = 0
     for byte in data[:-1]:
         checksum ^= byte
+        checksum ^= b'\xff'
     return checksum
 
 def obtainChecksum(data) -> bytearray:
     return data[-1]
 
 def frameIsSecure(data) -> bool:
-    #TODO: Code actuall check
+    #TODO: implement actuall check
     return true
 
 def getHopCount(data) -> int:
