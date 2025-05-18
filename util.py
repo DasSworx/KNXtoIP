@@ -66,13 +66,13 @@ def isExtendedFrame(L_DataFrame):
     else:
         return false
 
-def getSource(data) -> str:
+def getSourceFromStandardFrame(data) -> str:
     secondByte = data[1]
     thirdByte = data[2]
     source = str(secondByte) + "." + str(thirdByte)
     return source
 
-def getDestination(data) -> str:
+def getDestinationFromStandardFrame(data) -> str:
     fourthByte = data[3]
     fifthByte = data[4]
     destination = str(fourthByte) + "." + str(fifthByte)
@@ -85,16 +85,6 @@ def messageIsAck(data) -> bool:
     else:
         return false
 
-def calculateChecksum(data) -> bytearray:
-    checksum = 0
-    for byte in data[:-1]:
-        checksum ^= byte
-        checksum ^= b'\xff'
-    return checksum
-
-def obtainChecksum(data) -> bytearray:
-    return data[-1]
-
 def frameIsSecure(data) -> bool:
     #TODO: implement actuall check
     return true
@@ -102,8 +92,42 @@ def frameIsSecure(data) -> bool:
 def getHopCount(data) -> int:
     return data[5] >> 4
 
-def getDataFromStandardPackage(data):
-    return data[6:-1]
+def getDataFromStandardFrame(knx_frame):
+    return knx_frame[6:-1]
+
+def getDataFromExtenedFrame(knx_frame):
+    return knx_frame[7:-1]
+
+def getSourceFromExtendedFrame(knx_frame):
+    third_byte = knx_frame[2]
+    fourth_byte = knx_frame[3]
+    source = str(third_byte) + "." + str(fourth_byte)
+    return source
+
+def getDestinationFromExtendedFrame(knx_frame):
+    fifth_byte = knx_frame[4]
+    sixth_byte = knx_frame[5]
+    destination = str(fifth_byte) + "." + str(sixth_byte)
+    return destination
+
+#the extended frame knows two address types: 0 for point to point communication and 1 for all multicast shenanigans
+def getAddressTypeFromExtendedFrame(knx_frame) -> int:
+    extendedControlField = knx_frame[1]
+    return (extendedControlField >> 7) & 1
+
+def getHopCountFromExtendedFrame(knx_frame) -> int:
+    extendedControlField = knx_frame[1]
+    return (extendedControlField >> 4) & 0x07
+
+def calculateChecksum(data) -> bytearray:
+    checksum = 0
+    for byte in data[:-1]:
+        checksum ^= byte
+        checksum ^= 0xff
+    return checksum
+
+def obtainChecksum(data) -> bytearray:
+    return data[-1]
 
 def checksumIsValid(data) -> bool:
     if calculateChecksum(data) == obtainChecksum(data):

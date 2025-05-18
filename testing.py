@@ -30,7 +30,7 @@ def analysePackages():
         new_package = u.catch_traffic()
         new_package.show()
         package_data = u.obtain_payload(new_package)
-        package_sender = u.getSource(package_data)
+        package_sender = u.getSourceFromStandardFrame(package_data)
         print(f"source is: {package_sender}")
 
 senderThread = threading.Thread(target = sendingMessage)

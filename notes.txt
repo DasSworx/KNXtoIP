@@ -37,3 +37,7 @@ Idee:   die letzten 16 bit der IP-Adresse werden von der KNX Adresse belegt,
 Einstellungen:
     Adresse zum empfangen von KNX-Packeten (vorzugsweise NUR KNX-Packeten)
     Adresse zum versenden an Snort
+
+Allgemein:
+    Die Länge muss nicht manuell konvertiert werden, da Scapy diese automatisch korrekt setzt. Wenn sie in KNX-Fehlerhaft gesetzt wäre,
+    scheitert die Übertragung an der checksum, welche wiederum konvertiert wird.

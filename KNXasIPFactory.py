@@ -34,16 +34,19 @@ def convertKNXtoIP(knx_package) -> Packet:
                 #TODO: DataSecurePackets
                 print("decrypt Stuff")
             else:
-                src = networkInterface + u.getSource(knx_package)
-                dst = networkInterface + u.getDestination(knx_package)
+                src = networkInterface + u.getSourceFromStandardFrame(knx_package)
+                dst = networkInterface + u.getDestinationFromStandardFrame(knx_package)
                 TTL = u.getHopCount(knx_package)
                 checksumIsCorrect = u.checksumIsValid(knx_package)
-                data = u.getDataFromStandardPackage(knx_package)
+                data = u.getDataFromStandardFrame(knx_package)
                 return KNXasIP(src, dst, TTL, checksumIsCorrect, false, data)
 
         else:
             print("Package is a Extended Frame")
             #TODO: Extended packets
+    elif u.isL_PollFrame(knx_package):
+        #TODO: implement L_Poll
+        print("Is L_Poll Frame")
     else:
-        #TODO: check for L_POLL and ack
-        print("Wasnt a L_Data_Frame")
+        #TODO: implement ack
+        print("Is Ack Frame")
