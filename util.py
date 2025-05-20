@@ -89,8 +89,20 @@ def frameIsSecure(data) -> bool:
     #TODO: implement actuall check
     return true
 
-def getHopCount(data) -> int:
+def getHopCountFromStandard(data) -> int:
     return data[5] >> 4
+
+def getTPCIControllFlagFromStandard(knx_frame):
+    seventh_byte = knx_frame[6]
+    return (seventh_byte >> 7) & 1
+
+def getNumberedFromTPCIStandard(knx_frame):
+    seventh_byte = knx_frame[6]
+    return (seventh_byte >> 6) & 1
+
+def getSeqNrFromStandard(knx_frame) -> int:
+    seventh_byte = knx_frame[6]
+    return (seventh_byte >> 2) & 0x0f
 
 def getDataFromStandardFrame(knx_frame):
     return knx_frame[6:-1]
