@@ -52,7 +52,7 @@ def isAckFrame(knx_frame):
     else:
         return false
 
-def isStandartFrame(L_Data_Frame) -> bool:
+def isStandardFrame(L_Data_Frame) -> bool:
     firstByte = L_Data_Frame[0]
     if((firstByte >> 7) & 1) == 1: #Test if first bit is 0 for standart package
         return true

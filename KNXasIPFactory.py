@@ -29,7 +29,7 @@ def KNXasIP(src, dst, TTL, checksumIsValid, isAck, data) -> Packet:
 
 def convertKNXtoIP(knx_package) -> Packet:
     if u.isL_DataFrame(knx_package):
-        if u.isStandartFrame(knx_package):
+        if u.isStandardFrame(knx_package):
             if u.isSecureFrame():
                 #TODO: DataSecurePackets
                 print("decrypt Stuff")

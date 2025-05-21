@@ -20,7 +20,7 @@ while True:
     if packetData in globals():
 
         #standart message:
-        if u.isStandartFrame(packetData):
+        if u.isStandardFrame(packetData):
             if
         #extended frame:
         else:
