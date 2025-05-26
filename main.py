@@ -1,6 +1,5 @@
-import util as u
+from util import util_standard as u
 import errors as e
-import KNXasIPFactory
 
 """
 on linux you need:

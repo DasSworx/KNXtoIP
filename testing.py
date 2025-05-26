@@ -1,14 +1,10 @@
 import threading
 import time
 
-from scapy import *
-from scapy.interfaces import show_interfaces
 from scapy.layers.inet import IP, UDP
-from scapy.layers.l2 import Ether
 from scapy.packet import Raw
-from scapy.sendrecv import send, sendp, sniff
-from scapy.config import conf
-import util as u
+from scapy.sendrecv import send
+from util import util_standard as u
 
 """
 on linux you need:

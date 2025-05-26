@@ -1,5 +1,5 @@
 from enum import Enum
-import util as u
+from util import util_standard as u
 from errors import TelegramDoesNotUseSequenceNumberError
 
 

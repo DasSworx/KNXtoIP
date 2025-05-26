@@ -1,8 +1,7 @@
 from scapy.layers.inet import IP, TCP
 from scapy.packet import Packet
-import util as u
-import errors as err
-from util import false, true
+from util import util_standard as u
+from util.util_standard import false, true
 
 """
 src, dst sind Strings mit Punktschreibweise
