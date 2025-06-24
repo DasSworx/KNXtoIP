@@ -36,3 +36,12 @@ def isL_PollFrame(knx_frame):
         return False
     else:
         return True
+
+def isAck_Frame(knx_frame):
+    first_byte = B.Byte(knx_frame[0])
+    if first_byte.getBit4() == 0:
+        print("knx_frame is ack")
+        return True
+    else:
+        print("knx_frame is not an ack")
+        return False

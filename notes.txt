@@ -2,6 +2,9 @@ Adressbereich von KNX: 16 bit
 Adressbereich von IP: 32 bit
 Adressbereich von loopBack: 24 (127.0.0.1/8)
 
+Funktionen, die im Ethernet-Header übernommen werden:
+    Broadcastflag?
+
 Funktionen die im IP-Header übernommen werden:
     Destination und Source-Adresse,
     TTL/Hop-Count
@@ -41,3 +44,14 @@ Einstellungen:
 Allgemein:
     Die Länge muss nicht manuell konvertiert werden, da Scapy diese automatisch korrekt setzt. Wenn sie in KNX-Fehlerhaft gesetzt wäre,
     scheitert die Übertragung an der checksum, welche wiederum konvertiert wird.
+
+Tests:
+    Künstliche Pakete erstellen:
+        Standard/Extended/Ack
+        Broadcast/Single-Cast
+        Encrypted/Klartext
+        Checksum/CRC korrekt/nicht korrekt
+
+Paketstruktur:
+    Pakete sind:
+        Entweder L_Data_Frame oder L_Poll Frame oder Acks

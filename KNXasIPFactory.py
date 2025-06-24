@@ -1,7 +1,10 @@
 from scapy.layers.inet import IP, TCP
 from scapy.packet import Packet
-from util import util_standard as u
-from util.util_standard import false, true
+from util import util_standard as u_std
+from util import util_dataSecure as u_sec
+from util import util_extended as u_ext
+
+
 
 """
 src, dst sind Strings mit Punktschreibweise
@@ -27,23 +30,36 @@ def KNXasIP(src, dst, TTL, checksumIsValid, isAck, data) -> Packet:
 
 
 def convertKNXtoIP(knx_package) -> Packet:
-    if u.isL_DataFrame(knx_package):
-        if u.isStandardFrame(knx_package):
-            if u.isSecureFrame():
+    if u_std.isL_DataFrame(knx_package):
+        if u_std.isStandardFrame(knx_package):
+            if u_sec.isSecureFrame():
                 #TODO: DataSecurePackets
                 print("decrypt Stuff")
             else:
-                src = networkInterface + u.getSourceFromStandardFrame(knx_package)
-                dst = networkInterface + u.getDestinationFromStandardFrame(knx_package)
-                TTL = u.getHopCount(knx_package)
-                checksumIsCorrect = u.checksumIsValid(knx_package)
-                data = u.getDataFromStandardFrame(knx_package)
-                return KNXasIP(src, dst, TTL, checksumIsCorrect, false, data)
+                src = networkInterface + u_std.getSourceFromStandardFrame(knx_package)
+                dst = networkInterface + u_std.getDestinationFromStandardFrame(knx_package)
+                TTL = u_std.getHopCount(knx_package)
+                checksumIsCorrect = u_std.checksumIsValid(knx_package)
+                data = u_std.getDataFromStandardFrame(knx_package)
+                return KNXasIP(src, dst, TTL, checksumIsCorrect, False, data)
 
-        else:
+        elif u_ext.isExtendedFrame(knx_package):
             print("Package is a Extended Frame")
             #TODO: Extended packets
-    elif u.isL_PollFrame(knx_package):
+            if u_sec.isSecureFrame():
+                #TODO: DataSecureStuff
+                print("decrypt stuff")
+            else:
+                src = u_ext.getSourceFromExtendedFrame(knx_package)
+                dst = u_ext.getDestinationFromExtendedFrame(knx_package)
+                TTL = u_ext.getHopCountFromExtendedFrame(knx_package)
+                checksumIsCorrect = u_std.checksumIsValid(knx_package)
+                data = u_ext.getDataFromExtenedFrame(knx_package)
+                return KNXasIP(src, dst, TTL, checksumIsCorrect, False, data)
+        else:
+            print("Package could not be identified as standard or extended")
+
+    elif u_std.isL_PollFrame(knx_package):
         #TODO: implement L_Poll
         print("Is L_Poll Frame")
     else:
