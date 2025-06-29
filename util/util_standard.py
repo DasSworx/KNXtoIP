@@ -1,5 +1,4 @@
 from importlib.resources import Package
-from scapy import *
 from scapy.interfaces import show_interfaces
 from scapy.layers.inet import IP, UDP
 from scapy.layers.l2 import Ether
