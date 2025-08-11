@@ -5,7 +5,7 @@ from errors import NotAPacketError
 
 
 def catch_traffic() -> Packet:
-    pkt = sniff(iface = "lo", count = 1)
+    pkt = sniff(iface = "tun0", count = 1)
     return pkt[0]
 
 def obtain_payload(package) -> bytearray:

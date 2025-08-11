@@ -1,43 +1,29 @@
-from util import util_standard as u
+from util import util_general as u
 import errors as e
-from pytun import TunTapDevice
-from pytun import IFF_TUN
-from time import sleep
+import threading as th
+import testing as test
+import TunTap
 
-"""
-To run the code:
-1. Open project in VSCode
-2. Open Bash terminal in VSCode
-3. Run:
-sudo ./.venv/bin/python3 ./main.py
-"""
+
+# To run the code:
+# 1. Open project in VSCode
+# 2. Open Bash terminal in VSCode
+# 3. Run:
+# sudo ./.venv/bin/python3 ./main.py
 
 #PacketSendOffInterface = "127.0"
 tunAddress = "42.42.0.0"
-"""
-while True:
-    packet = u.catch_traffic()
-    try:
-        packetData = u.obtain_payload(packet)
-    except e.NotAPacketError:
-        print("No payload found in UDP-package")
 
-    if packetData in globals():
+#Boots up TUN Device
+TunTap.startUpTun
 
-        #standart message:
-        if u.isStandardFrame(packetData):
-            if
-        #extended frame:
-        else:
+fd = test.getFileDescribtor("tun0")
 
-    else:
-        continue
+#Start sending and receiving messages
+Sniff = th.Thread(target = test.sniffer, args = ())
+Spam = th.Thread(target = test.spammer, args = ())
+Receiver = th.Thread(target = test.receivePackets, args = fd)
 
-"""
-tun = TunTapDevice(flags = IFF_TUN)
-tun.addr = tunAddress
-tun.netmask = "255.255.0.0"
-tun.mtu = 1500
-tun.up()
-
-sleep(300)
+Receiver.start()
+Sniff.start()
+Spam.start()

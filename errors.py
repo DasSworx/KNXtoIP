@@ -8,5 +8,6 @@ class InvalidChecksumError(Exception):
     pass
 
 class TelegramDoesNotUseSequenceNumberError(Exception):
-    print("The telegram provided uses a service code, that does not use Sequence Numbers!")
-    pass
+    def __init__(self, message):
+        print("The telegram provided uses a service code, that does not use Sequence Numbers!")
+        super().__init__(message)

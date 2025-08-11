@@ -1,24 +1,20 @@
-import threading
-import time
-
-from scapy.layers.inet import IP, UDP
+from time import sleep
+import errors as e
+import os
+import fcntl
+import struct
+from scapy.layers.inet import IP, UDP, Ether
 from scapy.packet import Raw
-from scapy.sendrecv import send
-from util import util_standard as u
+from scapy.sendrecv import sendp, send
 
-"""
-on linux you need:
-sudo /home/KNX/PycharmProjects/PythonProject/.venv/bin/python /home/KNX/KNXtoIP/testing.py
-"""
+from util import util_general as u
 
 
 def sendingMessage():
     knxTestMessage = bytes(
         [0b10110000, 0b00100011, 0b00000101, 0b00010000, 0b00000001, 0b00000010, 0b00000000, 0b00000001, 0b10100010])
 
-    test_package = IP(src="127.0.0.2", dst="127.0.0.15") / UDP() / Raw(load=knxTestMessage)
-    send(test_package)
-    time.sleep(10)
+    test_package = IP(src="42.42.0.21", dst="42.42.0.15") / UDP(dport = 12345) / Raw(load=knxTestMessage)
     send(test_package)
 
 def analysePackages():
@@ -29,13 +25,43 @@ def analysePackages():
         package_sender = u.getSourceFromStandardFrame(package_data)
         print(f"source is: {package_sender}")
 
-senderThread = threading.Thread(target = sendingMessage)
-analyserThread = threading.Thread(target = analysePackages)
+def sniffer():
+    print("sniffer online")
+    while True:
+        packet = u.catch_traffic()
+        try:
+            packetData = u.obtain_payload(packet)
+        except e.NotAPacketError:
+            print("No payload found in UDP-package")
 
-analyserThread.start()
-senderThread.start()
+        if packetData in globals():
 
-senderThread.join()
-analyserThread.join()
+            #standart message:
+            if u.isStandardFrame(packetData):
+                print("Standard Frame")
+            #extended frame:
+            else:
+                print("Non-Standard Frame")
+        else:
+            continue
 
-#show_interfaces()
+def spammer():
+    print("Spammer online")
+    while True:
+        print("Sending message")
+        sendingMessage
+        sleep(5)
+
+IFF_TUN   = 0x0001   
+IFF_NO_PI = 0x1000
+TUNSETIFF = 0x400454ca
+
+def getFileDescribtor(if_name):
+    fd = os.open("/dev/net/tun", os.O_RDWR)
+    ifr = struct.pack("16sH", if_name.encode(), IFF_TUN | IFF_NO_PI)
+    fcntl.ioctl(fd, TUNSETIFF, ifr)
+    return fd
+
+def receivePackets(interface):
+    while True:
+        os.read(interface, 2048)
