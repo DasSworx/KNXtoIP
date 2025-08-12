@@ -8,6 +8,7 @@ from scapy.packet import Raw
 from scapy.sendrecv import sendp, send
 
 from util import util_general as u
+from util import util_standard as u_std
 
 
 def sendingMessage():
@@ -15,7 +16,7 @@ def sendingMessage():
         [0b10110000, 0b00100011, 0b00000101, 0b00010000, 0b00000001, 0b00000010, 0b00000000, 0b00000001, 0b10100010])
 
     test_package = IP(src="42.42.0.21", dst="42.42.0.15") / UDP(dport = 12345) / Raw(load=knxTestMessage)
-    send(test_package)
+    send(test_package, verbose = 0)
 
 def analysePackages():
     while True:
@@ -25,31 +26,33 @@ def analysePackages():
         package_sender = u.getSourceFromStandardFrame(package_data)
         print(f"source is: {package_sender}")
 
-def sniffer():
+def sniffer(interface):
     print("sniffer online")
     while True:
-        packet = u.catch_traffic()
+        
+        packet = u.catch_traffic(interface)
+        print("NEW PACKET!")
         try:
             packetData = u.obtain_payload(packet)
+            print("Payload found!")
         except e.NotAPacketError:
             print("No payload found in UDP-package")
 
-        if packetData in globals():
-
-            #standart message:
-            if u.isStandardFrame(packetData):
+        if 'packetData' in locals():
+            if u_std.isStandardFrame(packetData):
                 print("Standard Frame")
-            #extended frame:
-            else:
+            else: #extended frame
                 print("Non-Standard Frame")
         else:
             continue
 
 def spammer():
     print("Spammer online")
+    seq_nr = 0
     while True:
-        print("Sending message")
-        sendingMessage
+        print("Sending message" + str(seq_nr))
+        sendingMessage()
+        seq_nr += 1
         sleep(5)
 
 IFF_TUN   = 0x0001   
@@ -63,5 +66,8 @@ def getFileDescribtor(if_name):
     return fd
 
 def receivePackets(interface):
+    print("Receiver started")
     while True:
-        os.read(interface, 2048)
+        os.read(interface, 4096)
+        
+        

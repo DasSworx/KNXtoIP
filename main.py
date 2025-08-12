@@ -2,7 +2,7 @@ from util import util_general as u
 import errors as e
 import threading as th
 import testing as test
-import TunTap
+from TunTap import startUpTun
 
 
 # To run the code:
@@ -15,15 +15,15 @@ import TunTap
 tunAddress = "42.42.0.0"
 
 #Boots up TUN Device
-TunTap.startUpTun
+startUpTun()
 
 fd = test.getFileDescribtor("tun0")
 
 #Start sending and receiving messages
-Sniff = th.Thread(target = test.sniffer, args = ())
+Sniff = th.Thread(target = test.sniffer, args = [fd])
 Spam = th.Thread(target = test.spammer, args = ())
-Receiver = th.Thread(target = test.receivePackets, args = fd)
+#Receiver = th.Thread(target = test.receivePackets, args = [fd])
 
-Receiver.start()
+#Receiver.start()
 Sniff.start()
 Spam.start()

@@ -1,11 +1,16 @@
 from scapy.packet import Packet, Raw
+from scapy.layers.inet import IP
 from scapy.sendrecv import sniff
 import Bytes as B
 from errors import NotAPacketError
+import os
 
+def stripDownToIP(pkt):
+    strippedPkt = IP(pkt.bytes)
+    strippedPkt.show()
 
-def catch_traffic() -> Packet:
-    pkt = sniff(iface = "tun0", count = 1)
+def catch_traffic(interface) -> Packet:
+    pkt = IP(os.read(interface, 4096))
     return pkt[0]
 
 def obtain_payload(package) -> bytearray:
