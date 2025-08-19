@@ -1,7 +1,5 @@
 from scapy.packet import Packet, Raw
 from scapy.layers.inet import IP
-from scapy.sendrecv import sniff
-import Bytes as B
 from errors import NotAPacketError
 import os
 
@@ -11,7 +9,7 @@ def stripDownToIP(pkt):
 
 def catch_traffic(interface) -> Packet:
     pkt = IP(os.read(interface, 4096))
-    return pkt[0]
+    return pkt
 
 def obtain_payload(package) -> bytearray:
     if isinstance(package, Packet):
@@ -20,33 +18,37 @@ def obtain_payload(package) -> bytearray:
     else:
         raise NotAPacketError
 
-def isL_DataFrame(knx_frame):
-    first_byte = B.Byte(knx_frame[0])
-    if first_byte.getBit4() == 0:
-        print("knx_frame is ack")
-        return False
-    elif first_byte.getBit6() == 1:
-        print("knx_frame is L_Poll frame")
-        return False
-    else:
+def is_L_Data_Standard_Frame(telegram):
+    first_byte = telegram[0]
+    if (first_byte >> 7) == 1 and ((first_byte >> 6) & 1) == 0 and ((first_byte >> 4) & 1) == 1:
         return True
+    else:
+        return False
 
-def isL_PollFrame(knx_frame):
-    first_byte = B.Byte(knx_frame[0])
-    if first_byte.getBit4() == 0:
-        print("knx_frame is ack")
-        return False
-    elif first_byte.getBit6() == 0:
-        print("knx_frame is L_Data frame")
-        return False
-    else:
+def is_L_Data_Extended_Frame(telegram):
+    first_byte = telegram[0]
+    if (first_byte >> 7) == 0 and ((first_byte >> 6) & 1) == 0 and ((first_byte >> 4) & 1) == 1:
         return True
+    else:
+        return False
 
-def isAck_Frame(knx_frame):
-    first_byte = B.Byte(knx_frame[0])
-    if first_byte.getBit4() == 0:
-        print("knx_frame is ack")
+def is_L_Poll_Data_Frame(telegram):
+    first_byte = telegram[0]
+    if ((first_byte >> 6) & 1) == 1 and ((first_byte >> 4) & 1) == 1:
         return True
     else:
-        print("knx_frame is not an ack")
         return False
+
+def isAck_Frame(telegram):
+    first_byte = telegram[0]
+    if ((first_byte >> 4) & 1) == 0:
+        return True
+    else:
+        return False
+
+def calculateChecksum(telegram):
+    checksum = 0
+    for byte in telegram[:-1]:
+        checksum ^= byte
+    checksum ^= 0xff
+    return checksum

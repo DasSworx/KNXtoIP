@@ -1,9 +1,9 @@
 import subprocess
 
 
-def startUpTun():
+def startUpTun(name_of_interface, ip_address_and_mask):
     try:
-        subprocess.run(["sudo", "ip", "tuntap", "add", "dev", "tun0", "mode", "tun"], 
+        subprocess.run(["sudo", "ip", "tuntap", "add", "dev", name_of_interface, "mode", "tun"],
                        check = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         print("Added Tun device")
     except subprocess.CalledProcessError as e:
@@ -15,7 +15,7 @@ def startUpTun():
             raise
     
     try:
-        subprocess.run(["sudo", "ip", "addr", "add", "42.42.0.0/16", "dev", "tun0"], 
+        subprocess.run(["sudo", "ip", "addr", "add", ip_address_and_mask, "dev", name_of_interface],
                        check = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         print("Changed TUN address")
     except subprocess.CalledProcessError as e:
@@ -27,7 +27,7 @@ def startUpTun():
             raise
     
     try:
-        subprocess.run(["sudo", "ip", "link", "set", "tun0", "up"], 
+        subprocess.run(["sudo", "ip", "link", "set", name, "up"],
                        check = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         print("TUN was set to up")
     except subprocess.CalledProcessError as e:

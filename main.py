@@ -12,10 +12,10 @@ from TunTap import startUpTun
 # sudo ./.venv/bin/python3 ./main.py
 
 #PacketSendOffInterface = "127.0"
-tunAddress = "42.42.0.0"
+tun0Address = "42.42.0.0/16"
 
 #Boots up TUN Device
-startUpTun()
+startUpTun("tun0", tun0Address)
 
 fd = test.getFileDescribtor("tun0")
 

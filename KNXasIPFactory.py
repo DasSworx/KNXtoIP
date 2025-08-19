@@ -14,7 +14,7 @@ data ist ein bytearray
 """
 
 networkInterface = "0.0."
-
+#TODO: add choice between UDP and TCP
 def KNXasIP(src, dst, TTL, checksumIsValid, isAck, data) -> Packet:
     if isAck:
         knxpacket = IP(src = src, dst = dst, ttl = TTL) / TCP(flags = "A") / data

@@ -54,4 +54,4 @@ Tests:
 
 Paketstruktur:
     Pakete sind:
-        Entweder L_Data_Frame oder L_Poll Frame oder Acks
+        Entweder L_Data_Frame (Standard oder Extended) oder L_Poll Frame oder Acks
