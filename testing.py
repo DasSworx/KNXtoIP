@@ -8,14 +8,22 @@ from scapy.packet import Raw
 from scapy.sendrecv import sendp, send
 
 from util import util_general as u
-from util import util_standard as u_std
+
+knx_Standard_Data_Frame = bytes(
+        [0b10110000, 0b00100011, 0b00000101, 0b00010000, 0b00000001, 0b00010010, 0b00000000, 0b00000001, 0b00000000, 0b01101011])
+
+knx_Extended_Data_Frame = bytes(
+    [0b00010000, 0b01010000, 0b11101111, 0b00001111, 0b00111010, 0b01010101, 0b00010000, 0b01000001, 
+     0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 
+     0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000, 0b11110000,
+     0b01100001]
+)
 
 
 def sendingMessage():
-    knxTestMessage = bytes(
-        [0b10110000, 0b00100011, 0b00000101, 0b00010000, 0b00000001, 0b00000010, 0b00000000, 0b00000001, 0b10100010])
+    
 
-    test_package = IP(src="42.42.0.21", dst="42.42.0.15") / UDP(dport = 12345) / Raw(load=knxTestMessage)
+    test_package = IP(src="42.42.0.21", dst="42.42.0.15") / UDP(dport = 12345) / Raw(load=knx_Extended_Data_Frame)
     send(test_package, verbose = 0)
 
 def analysePackages():
@@ -31,20 +39,9 @@ def sniffer(interface):
     while True:
         
         packet = u.catch_traffic(interface)
-        print("NEW PACKET!")
-        try:
-            packetData = u.obtain_payload(packet)
-            print("Payload found!")
-        except e.NotAPacketError:
-            print("No payload found in UDP-package")
-
-        if 'packetData' in locals():
-            if u_std.isStandardFrame(packetData):
-                print("Standard Frame")
-            else: #extended frame
-                print("Non-Standard Frame")
-        else:
-            continue
+        print("NEW PACKET: ")
+        packet.show()
+        
 
 def spammer():
     print("Spammer online")

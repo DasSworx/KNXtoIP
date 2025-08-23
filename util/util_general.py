@@ -9,7 +9,7 @@ def stripDownToIP(pkt):
 
 def catch_traffic(interface) -> Packet:
     pkt = IP(os.read(interface, 4096))
-    return pkt
+    return pkt[0]
 
 def obtain_payload(package) -> bytearray:
     if isinstance(package, Packet):
@@ -47,8 +47,8 @@ def isAck_Frame(telegram):
         return False
 
 def calculateChecksum(telegram):
-    checksum = 0
+    checksum = 0b00000000
     for byte in telegram[:-1]:
         checksum ^= byte
-    checksum ^= 0xff
+    checksum ^= 0b11111111
     return checksum

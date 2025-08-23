@@ -27,7 +27,7 @@ def startUpTun(name_of_interface, ip_address_and_mask):
             raise
     
     try:
-        subprocess.run(["sudo", "ip", "link", "set", name, "up"],
+        subprocess.run(["sudo", "ip", "link", "set", name_of_interface, "up"],
                        check = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         print("TUN was set to up")
     except subprocess.CalledProcessError as e:

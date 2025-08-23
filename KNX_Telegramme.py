@@ -1,4 +1,19 @@
+from scapy.layers.inet import IP, TCP, UDP
+from scapy.packet import Packet
+import util.util_general as u
+
+def assambleAddress(network, device_address):
+        beginning = ".".join(network.split(".")[:2])
+        int1 = device_address[0]
+        int2 = device_address[1]
+        address_as_string = f"{int1}.{int2}"
+        print("address as string is:" + beginning + "." + address_as_string)
+        return beginning + "." + address_as_string
+
 class L_Data_Standard_Frame:
+    def checksumIsValid(self):
+        return self.checksum == u.calculateChecksum(self.full_telegram)
+        
     def get_control_field(self):
         return self.full_telegram[0]
 
@@ -24,8 +39,11 @@ class L_Data_Standard_Frame:
         return (byte >> 2) & 0b111111
 
     def get_APDU(self):
-            binary = int.from_bytes(self.full_telegram)
-            return (binary >> 8) & ((1 << ((self.data_len * 8) + 2)) -1)
+            len_of_telegram = len(self.full_telegram)
+            telegram_as_int = int.from_bytes(self.full_telegram)
+            telegram_as_int = ((telegram_as_int >> 8) << 6)
+            aligned_telegram = telegram_as_int.to_bytes(len_of_telegram, "big")
+            return aligned_telegram[-self.data_len-1:]
 
     def __init__(self, telegram_as_byte_array):
         self.full_telegram = telegram_as_byte_array
@@ -37,8 +55,22 @@ class L_Data_Standard_Frame:
         self.checksum = self.get_check_sum()
         self.TPCI = self.get_TPCI()
         self.APDU = self.get_APDU()
+    
+    def asIP(self, network_address) -> Packet:
+        knxpacket = IP(src = assambleAddress(network_address, self.src), 
+                       dst = assambleAddress(network_address, self.dst), 
+                       ttl = self.hop_count) / UDP() / self.APDU
+
+        if self.checksumIsValid():
+            return knxpacket
+        else:
+            knxpacket[IP].chksum = 0xFFFF
+            return knxpacket
 
 class L_Data_Extended_Frame:
+    def checksumIsValid(self):
+        return self.checksum == u.calculateChecksum(self.full_telegram)
+    
     def get_control_field(self):
         return self.full_telegram[0]
 
@@ -62,8 +94,11 @@ class L_Data_Extended_Frame:
         return self.full_telegram[-1]
 
     def get_APDU(self):
-        binary = int.from_bytes(self.full_telegram)
-        return (binary >> 8) & ((1 << ((self.data_len * 8) + 2)) - 1)
+            len_of_telegram = len(self.full_telegram)
+            telegram_as_int = int.from_bytes(self.full_telegram)
+            telegram_as_int = ((telegram_as_int >> 8) << 6)
+            aligned_telegram = telegram_as_int.to_bytes(len_of_telegram, "big")
+            return aligned_telegram[-self.data_len-1:]
 
     def get_hop_count(self):
         byte = self.full_telegram[1]
@@ -80,6 +115,17 @@ class L_Data_Extended_Frame:
         self.checksum = self.get_checksum()
         self.APDU = self.get_APDU()
         self.hop_count = self.get_hop_count()
+    
+    def asIP(self, network_address) -> Packet:
+        knxpacket = IP(src = assambleAddress(network_address, self.src), 
+                       dst = assambleAddress(network_address, self.dst), 
+                       ttl = self.hop_count) / UDP() / self.APDU
+
+        if self.checksumIsValid():
+            return knxpacket
+        else:
+            knxpacket[IP].chksum = 0xFFFF
+            return knxpacket
 
 class L_Poll_Data_Frame:
     def get_control_field(self):

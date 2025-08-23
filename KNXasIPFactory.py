@@ -1,10 +1,8 @@
-from scapy.layers.inet import IP, TCP
 from scapy.packet import Packet
-from util import util_standard as u_std
-from util import util_dataSecure as u_sec
-from util import util_extended as u_ext
-
-
+from scapy.sendrecv import send
+import util.util_general as u
+import KNX_Telegramme as t
+import errors as e
 
 """
 src, dst sind Strings mit Punktschreibweise
@@ -13,55 +11,30 @@ checksumIsValid und isAck sind bools
 data ist ein bytearray 
 """
 
-networkInterface = "0.0."
-#TODO: add choice between UDP and TCP
-def KNXasIP(src, dst, TTL, checksumIsValid, isAck, data) -> Packet:
-    if isAck:
-        knxpacket = IP(src = src, dst = dst, ttl = TTL) / TCP(flags = "A") / data
-    else:
-        knxpacket = IP(src = src, dst = dst, ttl = TTL) / TCP() / data
+def mapIncomingTraffic(surveiled_interface, receiver):
+    print("Mapper Online")
+    while True:
+        packet = u.catch_traffic(surveiled_interface)
+        print("NEW PACKET!")
+        try:
+            packetData = u.obtain_payload(packet)
+            print("Payload found!")
+        except e.NotAPacketError:
+            print("No payload found in UDP-package")
 
-    if checksumIsValid:
-        return knxpacket
-    else:
-        knxpacket[IP].chksum = 0xFFFF
-        return knxpacket
-
-
-
-def convertKNXtoIP(knx_package) -> Packet:
-    if u_std.isL_DataFrame(knx_package):
-        if u_std.isStandardFrame(knx_package):
-            if u_sec.isSecureFrame():
-                #TODO: DataSecurePackets
-                print("decrypt Stuff")
-            else:
-                src = networkInterface + u_std.getSourceFromStandardFrame(knx_package)
-                dst = networkInterface + u_std.getDestinationFromStandardFrame(knx_package)
-                TTL = u_std.getHopCount(knx_package)
-                checksumIsCorrect = u_std.checksumIsValid(knx_package)
-                data = u_std.getDataFromStandardFrame(knx_package)
-                return KNXasIP(src, dst, TTL, checksumIsCorrect, False, data)
-
-        elif u_ext.isExtendedFrame(knx_package):
-            print("Package is a Extended Frame")
-            #TODO: Extended packets
-            if u_sec.isSecureFrame():
-                #TODO: DataSecureStuff
-                print("decrypt stuff")
-            else:
-                src = u_ext.getSourceFromExtendedFrame(knx_package)
-                dst = u_ext.getDestinationFromExtendedFrame(knx_package)
-                TTL = u_ext.getHopCountFromExtendedFrame(knx_package)
-                checksumIsCorrect = u_std.checksumIsValid(knx_package)
-                data = u_ext.getDataFromExtenedFrame(knx_package)
-                return KNXasIP(src, dst, TTL, checksumIsCorrect, False, data)
+        if 'packetData' in locals():
+            send(convertKNXtoIP(packetData, receiver), verbose = 0)
         else:
-            print("Package could not be identified as standard or extended")
+            continue
 
-    elif u_std.isL_PollFrame(knx_package):
-        #TODO: implement L_Poll
-        print("Is L_Poll Frame")
+def convertKNXtoIP(knx_package, receiver_network) -> Packet:
+    if u.is_L_Data_Standard_Frame(knx_package):
+        return t.L_Data_Standard_Frame(knx_package).asIP(receiver_network)
+    elif u.is_L_Data_Extended_Frame(knx_package):
+        return t.L_Data_Extended_Frame(knx_package).asIP(receiver_network)
+    elif u.is_L_Poll_Data_Frame(knx_package):
+        poll_telegram = t.L_Poll_Data_Frame(knx_package)
+    elif u.isAck_Frame(knx_package):
+        print("Ack was ignored")
     else:
-        #TODO: implement ack
-        print("Is Ack Frame")
+        print("Illegal control field. Telegram type undefined")
