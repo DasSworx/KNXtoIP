@@ -4,6 +4,7 @@ import threading as th
 import testing as test
 from TunTap import startUpTun
 import KNXasIPFactory as f
+import configparser
 
 
 # To run the code:
@@ -12,21 +13,19 @@ import KNXasIPFactory as f
 # 3. Run:
 # sudo ./.venv/bin/python3 ./main.py
 
-#PacketSendOffInterface = "127.0"
-knx_receiver_Address = "42.42.0.0/16"
-
-IDS_receiver_interface = "30.25.0.0/16"
+config = configparser.ConfigParser()
+config.read("config.ini")
 
 #Boots up TUN Device
-startUpTun("tun0", knx_receiver_Address)
+startUpTun("tun0", config["Settings"]["inPort"])
 
-startUpTun("IDS_tun", IDS_receiver_interface)
+startUpTun("IDS_tun", config["Settings"]["outPort"])
 
 fd = test.getFileDescribtor("tun0")
 fd2 = test.getFileDescribtor("IDS_tun")
 
 #Start sending and receiving messages
-Mapper = th.Thread(target = f.mapIncomingTraffic, args = (fd, IDS_receiver_interface))
+Mapper = th.Thread(target = f.mapIncomingTraffic, args = (fd, config["Settings"]["outPort"]))
 IDS_stand_in = th.Thread(target = test.sniffer, args = [fd2])
 Spam = th.Thread(target = test.spammer, args = ())
 #Receiver = th.Thread(target = test.receivePackets, args = [fd])
