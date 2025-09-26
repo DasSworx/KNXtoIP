@@ -14,16 +14,24 @@ data ist ein bytearray
 def mapIncomingTraffic(surveiled_interface, receiver):
     print("Mapper Online")
     while True:
-        packet = u.catch_traffic(surveiled_interface)
+        packet = u.catch_eth(surveiled_interface)
+
         print("NEW PACKET!")
         try:
-            packetData = u.obtain_payload(packet)
+            cEMI_frame = u.obtain_payload(packet)
+            print(cEMI_frame)
+            additional_information_len = cEMI_frame[7]
+            print("additional Length:")
+            print(additional_information_len)
+            knx_frame = cEMI_frame[7+additional_information_len:]
+
             print("Payload found!")
         except e.NotAPacketError:
             print("No payload found in UDP-package")
 
-        if 'packetData' in locals():
-            send(convertKNXtoIP(packetData, receiver), verbose = 0)
+        if 'knx_frame' in locals():
+            send(convertKNXtoIP(knx_frame, receiver), verbose = 0)
+            print("packet send!")
         else:
             continue
 

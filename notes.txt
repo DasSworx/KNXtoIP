@@ -63,3 +63,6 @@ existiert unter which Snort
 Der Ordner mit den Regeln ist: /usr/local/etc/snort/rules/local.rules
 Unter /usr/local/etc/snort gibt es eine Datei snort.lua, welche die Hauptconfig darstellt
 Anscheinend werden Pakete noch nicht richtig an Snort übergeben. Das muss sich noch angeschaut werden
+
+
+TODO: find a way to deal with non-KNX frames in network and deal with KNX-Acks and other unwanted frames

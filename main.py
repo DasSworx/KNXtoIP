@@ -5,6 +5,7 @@ import testing as test
 from TunTap import startUpTun
 import KNXasIPFactory as f
 import configparser
+from scapy.all import sniff
 
 
 # To run the code:
@@ -17,20 +18,20 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 #Boots up TUN Device
-startUpTun("tun0", config["Settings"]["inPort"])
+#startUpTun("tun0", config["Settings"]["inPort"])
 
 startUpTun("IDS_tun", config["Settings"]["outPort"])
 
-fd = test.getFileDescribtor("tun0")
+#fd = test.getFileDescribtor("tun0")
 fd2 = test.getFileDescribtor("IDS_tun")
 
 #Start sending and receiving messages
-Mapper = th.Thread(target = f.mapIncomingTraffic, args = (fd, config["Settings"]["outPort"]))
+Mapper = th.Thread(target = f.mapIncomingTraffic, args = ("eth0", config["Settings"]["outPort"]))
 IDS_stand_in = th.Thread(target = test.sniffer, args = [fd2])
-Spam = th.Thread(target = test.spammer, args = ())
+#Spam = th.Thread(target = test.spammer, args = ())
 #Receiver = th.Thread(target = test.receivePackets, args = [fd])
 
 #Receiver.start()
 Mapper.start()
 IDS_stand_in.start()
-Spam.start()
+#Spam.start()

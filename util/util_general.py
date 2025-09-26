@@ -1,11 +1,18 @@
 from scapy.packet import Packet, Raw
-from scapy.layers.inet import IP
+from scapy.layers.inet import IP, Ether
+from scapy.all import sniff
 from errors import NotAPacketError
 import os
 
 def stripDownToIP(pkt):
     strippedPkt = IP(pkt.bytes)
     strippedPkt.show()
+
+def catch_eth(interface) -> Packet:
+    eth_pkt = sniff(iface = interface, count = 1)[0]
+    if IP in eth_pkt:
+        ip_pkt = eth_pkt[IP] 
+        return ip_pkt
 
 def catch_traffic(interface) -> Packet:
     pkt = IP(os.read(interface, 4096))

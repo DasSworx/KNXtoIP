@@ -39,7 +39,7 @@ def sniffer(interface):
     while True:
         
         packet = u.catch_traffic(interface)
-        print("NEW PACKET: ")
+        print("KNX PACKET AS IP: ")
         packet.show()
         
 
