@@ -155,3 +155,12 @@ class L_Poll_Data_Frame:
 class Ack_Frame:
     def __init__(self, telegram_as_byte_array):
         self.full_telegram = telegram_as_byte_array
+
+class KNX_IP_cEMI_Frame:
+    def __init__(self, telegram_as_byte_array):
+        self.full_telegram = telegram_as_byte_array
+    
+    def asIP(self, network_address) -> Packet:
+        return IP(src = "192.168.0.80", 
+                    dst = assambleAddress(network_address, [0,1])
+                    ) / UDP() / self.full_telegram

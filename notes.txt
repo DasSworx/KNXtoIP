@@ -65,4 +65,13 @@ Unter /usr/local/etc/snort gibt es eine Datei snort.lua, welche die Hauptconfig 
 Anscheinend werden Pakete noch nicht richtig an Snort übergeben. Das muss sich noch angeschaut werden
 
 
-TODO: find a way to deal with non-KNX frames in network and deal with KNX-Acks and other unwanted frames
+TODO: Map KNX-Frames from cEMI to cEMI (kinda)
+
+Übertragung von TP1 Frames mittels: Busware - TPUART-USB-Light (NCN-ESP32 version)
+    Ist erledigt!
+    Busware über USB an den Py anschließen
+    USB-File als inPort und USB als Mapper in der config eintragen
+    Das ganze wie gewohnt starten und genießen.
+
+
+

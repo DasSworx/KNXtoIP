@@ -1,7 +1,8 @@
 from scapy.packet import Packet, Raw
-from scapy.layers.inet import IP, Ether
+from scapy.layers.inet import IP
 from scapy.all import sniff
-from errors import NotAPacketError
+from errors import NotAPacketError, notAMapperError
+import KNXasIPFactory as f
 import os
 
 def stripDownToIP(pkt):
@@ -20,8 +21,11 @@ def catch_traffic(interface) -> Packet:
 
 def obtain_payload(package) -> bytearray:
     if isinstance(package, Packet):
-        data = package[Raw].load
-        return data
+        try:
+            data = package[Raw].load
+            return data
+        except IndexError:
+            print("NoRawDataSegment found")
     else:
         raise NotAPacketError
 
@@ -48,7 +52,7 @@ def is_L_Poll_Data_Frame(telegram):
 
 def isAck_Frame(telegram):
     first_byte = telegram[0]
-    if ((first_byte >> 4) & 1) == 0:
+    if first_byte & 0b00110011 == 0:
         return True
     else:
         return False
@@ -59,3 +63,12 @@ def calculateChecksum(telegram):
         checksum ^= byte
     checksum ^= 0b11111111
     return checksum
+
+def chooseMapper(mapper_code):
+    match mapper_code:
+        case "USB"|"usb":
+            print("Mapper set to USB")
+            return f.mapIncomingTrafficFromUSB
+        case "Eth"|"eth"|"ETH":
+            return f.mapIncomingTrafficFromEth
+    raise notAMapperError

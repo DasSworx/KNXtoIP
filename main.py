@@ -26,7 +26,10 @@ startUpTun("IDS_tun", config["Settings"]["outPort"])
 fd2 = test.getFileDescribtor("IDS_tun")
 
 #Start sending and receiving messages
-Mapper = th.Thread(target = f.mapIncomingTraffic, args = ("eth0", config["Settings"]["outPort"]))
+chosen_mapper = u.chooseMapper(config["Settings"]["Mapper"])
+Mapper = th.Thread(target = chosen_mapper, args = (config["Settings"]["inPort"], config["Settings"]["outPort"]))
+
+
 IDS_stand_in = th.Thread(target = test.sniffer, args = [fd2])
 #Spam = th.Thread(target = test.spammer, args = ())
 #Receiver = th.Thread(target = test.receivePackets, args = [fd])
