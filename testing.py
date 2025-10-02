@@ -67,4 +67,12 @@ def receivePackets(interface):
     while True:
         os.read(interface, 4096)
         
-        
+def showKNXTrafficOverUSB(usb_file):
+    fd = os.open(usb_file, os.O_RDONLY | os.O_NONBLOCK)
+    while True:
+        try:
+            knx_frame = os.read(fd, 128)
+            if knx_frame:
+                print(knx_frame)
+        except BlockingIOError:
+            pass 

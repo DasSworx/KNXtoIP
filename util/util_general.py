@@ -19,6 +19,17 @@ def catch_traffic(interface) -> Packet:
     pkt = IP(os.read(interface, 4096))
     return pkt[0]
 
+def udp_uses_knx_port(package):
+    if isinstance(package,Packet):
+        try:
+            udp = package[udp]
+        except IndexError:
+            return False
+        if udp.sport == 3671:
+            return True
+    else:
+        return False
+
 def obtain_payload(package) -> bytearray:
     if isinstance(package, Packet):
         try:
@@ -33,8 +44,7 @@ def is_L_Data_Standard_Frame(telegram):
     first_byte = telegram[0]
     if (first_byte >> 7) == 1 and ((first_byte >> 6) & 1) == 0 and ((first_byte >> 4) & 1) == 1:
         return True
-    else:
-        return False
+    return False
 
 def is_L_Data_Extended_Frame(telegram):
     first_byte = telegram[0]
@@ -72,3 +82,6 @@ def chooseMapper(mapper_code):
         case "Eth"|"eth"|"ETH":
             return f.mapIncomingTrafficFromEth
     raise notAMapperError
+
+def print_bytes_as_hex(byte_array):
+    print(byte_array.hex())

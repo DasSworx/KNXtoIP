@@ -38,3 +38,7 @@ IDS_stand_in = th.Thread(target = test.sniffer, args = [fd2])
 Mapper.start()
 IDS_stand_in.start()
 #Spam.start()
+"""
+
+test.showKNXTrafficOverUSB(config["Settings"]["inPort"])
+"""

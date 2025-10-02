@@ -1,6 +1,7 @@
 from scapy.layers.inet import IP, TCP, UDP
 from scapy.packet import Packet
 import util.util_general as u
+from keystore_manager import get_keystore
 
 def assambleAddress(network, device_address):
         beginning = ".".join(network.split(".")[:2])
@@ -157,10 +158,69 @@ class Ack_Frame:
         self.full_telegram = telegram_as_byte_array
 
 class KNX_IP_cEMI_Frame:
+    def get_knx_ip_len(self):
+        return self.full_telegram[0]
+    
+    def get_cEMI_frame(self):
+        return self.full_telegram[self.knx_ip_len:]
+    
+    def get_cEMI_additional_header_len(self):
+        return self.cEMI_frame[1]
+    
+    def get_APCI(self):
+        tpci_apci = self.cEMI_frame[9+self.cEMI_additional_header_len:11+self.cEMI_additional_header_len]
+        apci = bytes([tpci_apci[0] & 0x03]) + tpci_apci[1:]
+        return apci
+    
+    def get_frame(self):
+        return self.cEMI_frame[self.cEMI_additional_header_len+2 :]
+    
+    def get_src(self):
+        return self.frame[2:4]
+    
+    def get_dst(self):
+        return self.frame[4:6]
+    
+    def get_control1(self):
+        return self.frame[0]
+
+    def get_control2(self):
+        return self.frame[1]
+    
+    def get_hop_count(self):
+        return (self.control2 >> 4) & 0b00000111
+    
+    def get_payload(self):
+        payload_w_tpci = self.cEMI_frame[(9+self.cEMI_additional_header_len):]
+        payload = bytes([payload_w_tpci[0] & 0x03]) + payload_w_tpci[1:]
+        return payload 
+
     def __init__(self, telegram_as_byte_array):
         self.full_telegram = telegram_as_byte_array
+        self.knx_ip_len = self.get_knx_ip_len()
+        self.cEMI_frame = self.get_cEMI_frame()
+        self.cEMI_additional_header_len = self.get_cEMI_additional_header_len()
+        self.frame = self.get_frame()
+        self.src = self.get_src()
+        self.dst = self.get_dst()
+        self.control1 = self.get_control1()
+        self.control2 = self.get_control2()
+        self.hop_count = self.get_hop_count()
+        self.APCI = self.get_APCI()
+        self.payload = self.get_payload()
     
     def asIP(self, network_address) -> Packet:
-        return IP(src = "192.168.0.80", 
-                    dst = assambleAddress(network_address, [0,1])
-                    ) / UDP() / self.full_telegram
+        print("----APCI: ----")
+        u.print_bytes_as_hex(self.APCI)
+        if self.APCI == bytearray([0x03, 0xF1]):
+            print("----Decrypting:----")
+            java_bytes = get_keystore().decryptAndVerify1(self.cEMI_frame)
+            payload = bytearray((b & 0xFF) for b in java_bytes)
+            u.print_bytes_as_hex(payload)
+        else:
+            payload = self.payload
+        
+        knxpacket = IP(src = assambleAddress(network_address, self.src), 
+                       dst = assambleAddress(network_address, self.dst), 
+                       ttl = self.hop_count) / UDP() / payload
+        return knxpacket

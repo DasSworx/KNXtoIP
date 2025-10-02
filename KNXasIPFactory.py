@@ -16,15 +16,16 @@ def mapIncomingTrafficFromEth(surveiled_interface, receiver):
     print("Eth-Mapper Online")
     while True:
         packet = u.catch_eth(surveiled_interface)
-
         print("NEW PACKET!")
         try:
+            if not u.udp_uses_knx_port:
+                print("UDP does not use KNX-Port")
+                continue
             knx_ip_cEMI_frame = u.obtain_payload(packet)
             if knx_ip_cEMI_frame is None:
                 print("Skipped empty UDP message")
                 continue
-            print("Payload found!")
-            print(knx_ip_cEMI_frame)
+            u.print_bytes_as_hex(knx_ip_cEMI_frame)
         except e.NotAPacketError:
             print("No payload found in UDP-package")
             continue

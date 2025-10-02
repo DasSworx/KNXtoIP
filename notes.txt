@@ -73,5 +73,9 @@ TODO: Map KNX-Frames from cEMI to cEMI (kinda)
     USB-File als inPort und USB als Mapper in der config eintragen
     Das ganze wie gewohnt starten und genießen.
 
+TODO:
+    cEMI tiefer in IP integrieren (ip-addressen mappen, ttl, etc)
 
+USB-Bridge muss nach Neustart neu Installiert werden (USB-bridge unter https://install.busware.de/TUL/)
 
+Prüfsumme verhuntzen, falls der Keystore eine Exception wirft (gucke in testJava)
