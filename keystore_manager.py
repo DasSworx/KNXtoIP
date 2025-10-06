@@ -1,5 +1,4 @@
 import jpype
-import jpype.imports
 
 jvm_started = False
 keystore = None

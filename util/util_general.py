@@ -1,7 +1,7 @@
 from scapy.packet import Packet, Raw
 from scapy.layers.inet import IP
 from scapy.all import sniff
-from errors import NotAPacketError, notAMapperError
+import errors as e
 import KNXasIPFactory as f
 import os
 
@@ -19,26 +19,24 @@ def catch_traffic(interface) -> Packet:
     pkt = IP(os.read(interface, 4096))
     return pkt[0]
 
-def udp_uses_knx_port(package):
+def obtain_payload(package) -> bytearray:
     if isinstance(package,Packet):
         try:
             udp = package[udp]
         except IndexError:
-            return False
+            raise e.noUDPFoundError
+        
         if udp.sport == 3671:
-            return True
+            try:
+                data = package[Raw].load
+                return data
+            except IndexError:
+                raise e.noRawDataFoundError
+        else:
+            raise e.wrongUDPPortError
     else:
-        return False
-
-def obtain_payload(package) -> bytearray:
-    if isinstance(package, Packet):
-        try:
-            data = package[Raw].load
-            return data
-        except IndexError:
-            print("NoRawDataSegment found")
-    else:
-        raise NotAPacketError
+        raise e.NotAPacketError
+    
 
 def is_L_Data_Standard_Frame(telegram):
     first_byte = telegram[0]
@@ -67,21 +65,14 @@ def isAck_Frame(telegram):
     else:
         return False
 
-def calculateChecksum(telegram):
-    checksum = 0b00000000
-    for byte in telegram[:-1]:
-        checksum ^= byte
-    checksum ^= 0b11111111
-    return checksum
-
 def chooseMapper(mapper_code):
     match mapper_code:
         case "USB"|"usb":
             print("Mapper set to USB")
-            return f.mapIncomingTrafficFromUSB
+            return f.map_incoming_traffic_from_USB
         case "Eth"|"eth"|"ETH":
-            return f.mapIncomingTrafficFromEth
-    raise notAMapperError
+            return f.map_incoming_traffic_from_eth
+    raise e.notAMapperError
 
 def print_bytes_as_hex(byte_array):
     print(byte_array.hex())
