@@ -1,5 +1,5 @@
 from scapy.packet import Packet, Raw
-from scapy.layers.inet import IP
+from scapy.layers.inet import IP, UDP
 from scapy.all import sniff
 import errors as e
 import KNXasIPFactory as f
@@ -22,7 +22,7 @@ def catch_traffic(interface) -> Packet:
 def obtain_payload(package) -> bytearray:
     if isinstance(package,Packet):
         try:
-            udp = package[udp]
+            udp = package[UDP]
         except IndexError:
             raise e.noUDPFoundError
         

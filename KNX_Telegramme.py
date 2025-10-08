@@ -18,7 +18,7 @@ class KNX_TP1_Telegram():
         else:
             raise e.TelegramTypeNotSupportedError
         
-    def assamble_address(network, device_address):
+    def assamble_address(self, network, device_address):
         beginning = ".".join(network.split(".")[:2])
         int1 = device_address[0]
         int2 = device_address[1]
@@ -85,8 +85,8 @@ class KNX_TP1_Telegram():
             return aligned_telegram[-self.data_len-1:]
 
     def __init__(self, telegram_as_byte_array):
-        self.type_of_telegram = self.get_type_of_telegram()
         self.telegram_as_byte_array = telegram_as_byte_array
+        self.type_of_telegram = self.get_type_of_telegram()
         self.control_field = self.get_control_field()
         self.checksum = self.get_checksum()
         self.src = self.get_src()
@@ -137,7 +137,7 @@ class Ack_Frame:
 
 class KNX_IP_cEMI_Frame:
 
-    def assamble_address(network, device_address):
+    def assamble_address(self, network, device_address):
         beginning = ".".join(network.split(".")[:2])
         int1 = device_address[0]
         int2 = device_address[1]

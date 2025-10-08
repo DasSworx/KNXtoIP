@@ -46,7 +46,7 @@ def map_incoming_traffic_from_USB(usb_file, receiver):
                     continue
                 send(telegram_as_IP, verbose = 0)
         except BlockingIOError:
-            continue
+            pass
 
 
 def convert_KNX_to_IP(knx_package, receiver_network) -> Packet:
