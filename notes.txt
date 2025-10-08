@@ -54,4 +54,28 @@ Tests:
 
 Paketstruktur:
     Pakete sind:
-        Entweder L_Data_Frame oder L_Poll Frame oder Acks
+        Entweder L_Data_Frame (Standard oder Extended) oder L_Poll Frame oder Acks
+
+
+Snort:
+
+existiert unter which Snort
+Der Ordner mit den Regeln ist: /usr/local/etc/snort/rules/local.rules
+Unter /usr/local/etc/snort gibt es eine Datei snort.lua, welche die Hauptconfig darstellt
+Anscheinend werden Pakete noch nicht richtig an Snort übergeben. Das muss sich noch angeschaut werden
+
+
+TODO: Map KNX-Frames from cEMI to cEMI (kinda)
+
+Übertragung von TP1 Frames mittels: Busware - TPUART-USB-Light (NCN-ESP32 version)
+    Ist erledigt!
+    Busware über USB an den Py anschließen
+    USB-File als inPort und USB als Mapper in der config eintragen
+    Das ganze wie gewohnt starten und genießen.
+
+TODO:
+    cEMI tiefer in IP integrieren (ip-addressen mappen, ttl, etc)
+
+USB-Bridge muss nach Neustart neu Installiert werden (USB-bridge unter https://install.busware.de/TUL/)
+
+Prüfsumme verhuntzen, falls der Keystore eine Exception wirft (gucke in testJava)
