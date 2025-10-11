@@ -32,14 +32,6 @@ def analyse_packages():
         package_sender = u.getSourceFromStandardFrame(package_data)
         print(f"source is: {package_sender}")
 
-def sniffer(interface):
-    print("sniffer online")
-    while True:
-        
-        packet = u.catch_traffic(interface)
-        print("KNX PACKET AS IP: ")
-        packet.show()  
-
 def spammer():
     print("Spammer online")
     seq_nr = 0
@@ -48,21 +40,6 @@ def spammer():
         sending_message()
         seq_nr += 1
         sleep(5)
-
-IFF_TUN   = 0x0001   
-IFF_NO_PI = 0x1000
-TUNSETIFF = 0x400454ca
-
-def get_file_describtor(if_name):
-    fd = os.open("/dev/net/tun", os.O_RDWR)
-    ifr = struct.pack("16sH", if_name.encode(), IFF_TUN | IFF_NO_PI)
-    fcntl.ioctl(fd, TUNSETIFF, ifr)
-    return fd
-
-def receive_packets(interface):
-    print("Receiver started")
-    while True:
-        os.read(interface, 4096)
         
 def show_KNX_traffic_over_USB(usb_file):
     fd = os.open(usb_file, os.O_RDONLY | os.O_NONBLOCK)

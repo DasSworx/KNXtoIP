@@ -22,14 +22,14 @@ u_c.confirm_network_mask(config["Settings"]["outPort"])
 
 start_up_tun("IDS_tun", config["Settings"]["outPort"])
 
-fd2 = test.get_file_describtor("IDS_tun")
+fd2 = u.get_file_describtor("IDS_tun")
 
 #Start sending and receiving messages
 chosen_mapper = u.choose_mapper(config["Settings"]["Mapper"])
 Mapper = th.Thread(target = chosen_mapper, args = (config["Settings"]["inPort"], config["Settings"]["outPort"]))
 
 
-Receiver = th.Thread(target = test.sniffer, args = [fd2])
+Receiver = th.Thread(target = u.receiver_with_log, args = [fd2])
 
 Mapper.start()
 Receiver.start()
