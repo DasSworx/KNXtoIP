@@ -7,6 +7,10 @@ class InvalidKNXPacketError(Exception):
 class InvalidChecksumError(Exception):
     pass
 
+class networkToSmallError(Exception):
+    def __init__(self):
+        super().__init__("\n\tThe size of the network provided is not large enough. Minimum required is /16")
+
 class cEMIFrameCouldNotBeMappedError(Exception):
     def __init__(self):
         super().__init__("\n\tThe mapping of the provided cEMI-frame failed")

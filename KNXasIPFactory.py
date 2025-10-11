@@ -5,12 +5,7 @@ import KNX_Telegramme as t
 import errors as e
 import os
 
-"""
-src, dst sind Strings mit Punktschreibweise
-TTL ein int
-checksumIsValid und isAck sind bools
-data ist ein bytearray 
-"""
+
 
 def map_incoming_traffic_from_eth(surveiled_interface, receiver):
     print("Eth-Mapper Online")
@@ -24,7 +19,7 @@ def map_incoming_traffic_from_eth(surveiled_interface, receiver):
                 raise e.payloadIsEmptyError
             u.print_bytes_as_hex(knx_ip_cEMI_frame)
 
-            telegram_as_IP = t.KNX_IP_cEMI_Frame(knx_ip_cEMI_frame).asIP(receiver)
+            telegram_as_IP = t.KNX_IP_cEMI_Frame(knx_ip_cEMI_frame).as_IP(receiver)
                         
             send(telegram_as_IP, verbose = 0)
             print("Packet send!")
@@ -34,7 +29,7 @@ def map_incoming_traffic_from_eth(surveiled_interface, receiver):
             continue
 
 def map_incoming_traffic_from_USB(usb_file, receiver):
-    print("USB-Mapper Online")
+    print("USB-MAPPER ONLINE")
     fd = os.open(usb_file, os.O_RDONLY | os.O_NONBLOCK)
     while True:
         try:
@@ -51,6 +46,6 @@ def map_incoming_traffic_from_USB(usb_file, receiver):
 
 def convert_KNX_to_IP(knx_package, receiver_network) -> Packet:
     try:
-        return t.KNX_TP1_Telegram(knx_package).asIP(receiver_network)
+        return t.KNX_TP1_Telegram(knx_package).as_IP(receiver_network)
     except e.TelegramTypeNotSupportedError:
         return None

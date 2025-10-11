@@ -20,13 +20,11 @@ knx_Extended_Data_Frame = bytes(
 )
 
 
-def sendingMessage():
-    
-
+def sending_message():
     test_package = IP(src="42.42.0.21", dst="42.42.0.15") / UDP(dport = 12345) / Raw(load=knx_Extended_Data_Frame)
     send(test_package, verbose = 0)
 
-def analysePackages():
+def analyse_packages():
     while True:
         new_package = u.catch_traffic()
         new_package.show()
@@ -40,15 +38,14 @@ def sniffer(interface):
         
         packet = u.catch_traffic(interface)
         print("KNX PACKET AS IP: ")
-        packet.show()
-        
+        packet.show()  
 
 def spammer():
     print("Spammer online")
     seq_nr = 0
     while True:
         print("Sending message" + str(seq_nr))
-        sendingMessage()
+        sending_message()
         seq_nr += 1
         sleep(5)
 
@@ -56,18 +53,18 @@ IFF_TUN   = 0x0001
 IFF_NO_PI = 0x1000
 TUNSETIFF = 0x400454ca
 
-def getFileDescribtor(if_name):
+def get_file_describtor(if_name):
     fd = os.open("/dev/net/tun", os.O_RDWR)
     ifr = struct.pack("16sH", if_name.encode(), IFF_TUN | IFF_NO_PI)
     fcntl.ioctl(fd, TUNSETIFF, ifr)
     return fd
 
-def receivePackets(interface):
+def receive_packets(interface):
     print("Receiver started")
     while True:
         os.read(interface, 4096)
         
-def showKNXTrafficOverUSB(usb_file):
+def show_KNX_traffic_over_USB(usb_file):
     fd = os.open(usb_file, os.O_RDONLY | os.O_NONBLOCK)
     while True:
         try:

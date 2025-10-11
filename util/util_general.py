@@ -65,7 +65,7 @@ def isAck_Frame(telegram):
     else:
         return False
 
-def chooseMapper(mapper_code):
+def choose_mapper(mapper_code):
     match mapper_code:
         case "USB"|"usb":
             print("Mapper set to USB")

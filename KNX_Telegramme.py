@@ -95,7 +95,7 @@ class KNX_TP1_Telegram():
         self.data_len = self.get_data_len()
         self.APDU = self.get_APDU()
     
-    def asIP(self, network_address) -> Packet:
+    def as_IP(self, network_address) -> Packet:
         knxpacket = IP(src = self.assamble_address(network_address, self.src), 
                        dst = self.assamble_address(network_address, self.dst), 
                        ttl = self.hop_count) / UDP() / self.APDU
@@ -196,7 +196,7 @@ class KNX_IP_cEMI_Frame:
         self.APCI = self.get_APCI()
         self.payload = self.get_payload()
     
-    def asIP(self, network_address) -> Packet:
+    def as_IP(self, network_address) -> Packet:
         print("----APCI: ----")
         u.print_bytes_as_hex(self.APCI)
         if self.APCI == bytearray([0x03, 0xF1]):

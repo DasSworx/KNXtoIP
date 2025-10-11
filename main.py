@@ -1,8 +1,9 @@
 from util import util_general as u
+from util import util_config as u_c
 import errors as e
 import threading as th
 import testing as test
-from TunTap import startUpTun
+from TunTap import start_up_tun
 import KNXasIPFactory as f
 import configparser
 from scapy.all import sniff
@@ -17,28 +18,22 @@ from scapy.all import sniff
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-#Boots up TUN Device
-#startUpTun("tun0", config["Settings"]["inPort"])
+u_c.confirm_network_mask(config["Settings"]["outPort"])
 
-startUpTun("IDS_tun", config["Settings"]["outPort"])
+start_up_tun("IDS_tun", config["Settings"]["outPort"])
 
-#fd = test.getFileDescribtor("tun0")
-fd2 = test.getFileDescribtor("IDS_tun")
+fd2 = test.get_file_describtor("IDS_tun")
 
 #Start sending and receiving messages
-chosen_mapper = u.chooseMapper(config["Settings"]["Mapper"])
+chosen_mapper = u.choose_mapper(config["Settings"]["Mapper"])
 Mapper = th.Thread(target = chosen_mapper, args = (config["Settings"]["inPort"], config["Settings"]["outPort"]))
 
 
-IDS_stand_in = th.Thread(target = test.sniffer, args = [fd2])
-#Spam = th.Thread(target = test.spammer, args = ())
-#Receiver = th.Thread(target = test.receivePackets, args = [fd])
+Receiver = th.Thread(target = test.sniffer, args = [fd2])
 
-#Receiver.start()
 Mapper.start()
-IDS_stand_in.start()
-#Spam.start()
-"""
+Receiver.start()
 
+"""
 test.showKNXTrafficOverUSB(config["Settings"]["inPort"])
 """

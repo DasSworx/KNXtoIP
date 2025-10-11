@@ -1,7 +1,9 @@
 import subprocess
+import util.util_config as u
 
 
-def startUpTun(name_of_interface, ip_address_and_mask):
+def start_up_tun(name_of_interface, ip_address_and_mask):
+
     try:
         subprocess.run(["sudo", "ip", "tuntap", "add", "dev", name_of_interface, "mode", "tun"],
                        check = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
