@@ -5,6 +5,7 @@
 #3: Info
 #4: Debug
 
+import util.util_general as u
 import configparser
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -72,3 +73,35 @@ class TelegramTypeNotSupportedError(Exception):
         super().__init__()
         if int(config["Settings"]["verbose"]) < 2:
             print("\n\tINFO: The control byte of the provided telegram does not match any supported type")
+
+#DEBUG
+
+def newPacketMessage():
+    if int(config["Settings"]["verbose"]) < 3:
+        print("New Packet")
+
+def newKNXTelegramMessage():
+    if int(config["Settings"]["verbose"]) < 3:
+        print("NEW KNX_Telegram")
+
+def packetSentMessage():
+    if int(config["Settings"]["verbose"]) < 3:
+        print("Packet sent!")
+
+def decryptingMessage():
+    if int(config["Settings"]["verbose"]) < 3:
+        print("----Decrypting:----")
+
+def printAPCI(APCI):
+    if int(config["Settings"]["verbose"]) < 3:
+        print("----APCI: ----")
+        u.print_bytes_as_hex(APCI)
+
+def printPayload(payload):
+    if int(config["Settings"]["verbose"]) < 3:
+        print("----Payload: ----")
+        u.print_bytes_as_hex(payload)
+
+def sendingTestMessage(seq_nr):
+    if int(config["Settings"]["verbose"]) < 3:
+        print("Sending message" + str(seq_nr))

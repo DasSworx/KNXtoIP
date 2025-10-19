@@ -36,7 +36,7 @@ def spammer():
     print("Spammer online")
     seq_nr = 0
     while True:
-        print("Sending message" + str(seq_nr))
+        e.sendingTestMessage(seq_nr)
         sending_message()
         seq_nr += 1
         sleep(5)

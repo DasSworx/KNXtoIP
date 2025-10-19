@@ -197,13 +197,12 @@ class KNX_IP_cEMI_Frame:
         self.payload = self.get_payload()
     
     def as_IP(self, network_address) -> Packet:
-        print("----APCI: ----")
-        u.print_bytes_as_hex(self.APCI)
+        e.printAPCI(self.APCI)
         if self.APCI == bytearray([0x03, 0xF1]):
-            print("----Decrypting:----")
+            e.decryptingMessage()
             java_bytes = get_keystore().decryptAndVerify1(self.cEMI_frame)
             payload = bytearray((b & 0xFF) for b in java_bytes)
-            u.print_bytes_as_hex(payload)
+            e.printPayload(payload)
         else:
             payload = self.payload
         

@@ -3,6 +3,7 @@ from scapy.sendrecv import send
 import util.util_general as u
 import KNX_Telegramme as t
 import errors as e
+from errors import newPacketMessage, packetSentMessage, newKNXTelegramMessage
 import os
 
 
@@ -11,7 +12,7 @@ def map_incoming_traffic_from_eth(surveiled_interface, receiver):
     print("Eth-Mapper Online")
     while True:
         packet = u.catch_eth(surveiled_interface)
-        print("NEW PACKET!")
+        newPacketMessage()
         try:
             knx_ip_cEMI_frame = u.obtain_payload(packet)
 
@@ -22,7 +23,7 @@ def map_incoming_traffic_from_eth(surveiled_interface, receiver):
             telegram_as_IP = t.KNX_IP_cEMI_Frame(knx_ip_cEMI_frame).as_IP(receiver)
                         
             send(telegram_as_IP, verbose = 0)
-            print("Packet send!")
+            packetSentMessage()
 
         except Exception as e:
             print(e)
@@ -35,7 +36,7 @@ def map_incoming_traffic_from_USB(usb_file, receiver):
         try:
             knx_frame = os.read(fd, 256)
             if knx_frame:
-                print("NEW KNX_Telegram")
+                newKNXTelegramMessage()
                 telegram_as_IP = convert_KNX_to_IP(knx_frame, receiver)
                 if telegram_as_IP is None:
                     continue
