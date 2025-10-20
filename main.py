@@ -15,6 +15,8 @@ from scapy.all import sniff
 # 3. Run:
 # sudo ./.venv/bin/python3 ./main.py
 
+#Command for starting Snort: sudo /home/KNX/Snort/snort3_place/bin/snort -i IDS_tun -c /home/KNX/Snort/snort3_place/etc/snort/snort.lua -l /home/KNX/Snort/snort3_place/log/
+
 config = configparser.ConfigParser()
 config.read("config.ini")
 
