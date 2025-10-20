@@ -20,7 +20,8 @@ knx_Extended_Data_Frame = bytes(
      0b01100001]
 )
 
-KNX_UDP_cEMI = "0e570e570019dd730610053000112900bcd01103000201008000"
+KNX_UDP_cEMI = "0e570e570019dd730610053000112900bcd01103000201008000" #echtes Paket
+
 cEMI_Frame = UDP(bytearray.fromhex(KNX_UDP_cEMI))
 
 
@@ -44,7 +45,7 @@ def spammer():
         e.sendingTestMessage(seq_nr)
         sending_message()
         seq_nr += 1
-        sleep(5)
+        #sleep(0.01)
         
 def show_KNX_traffic_over_USB(usb_file):
     fd = os.open(usb_file, os.O_RDONLY | os.O_NONBLOCK)

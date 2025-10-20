@@ -179,7 +179,9 @@ class KNX_IP_cEMI_Frame:
     
     def get_payload(self):
         payload_w_tpci = self.cEMI_frame[(9+self.cEMI_additional_header_len):]
-        payload = bytes([payload_w_tpci[0] & 0x03]) + payload_w_tpci[1:]
+        payload_len = len(payload_w_tpci)
+        payload_w_tpci = ((int.from_bytes(payload_w_tpci) << 8)>>2)
+        payload = payload_w_tpci.to_bytes(payload_len + 1, "big")[1:]
         return payload 
 
     def __init__(self, telegram_as_byte_array):
@@ -202,6 +204,10 @@ class KNX_IP_cEMI_Frame:
             e.decryptingMessage()
             java_bytes = get_keystore().decryptAndVerify1(self.cEMI_frame)
             payload = bytearray((b & 0xFF) for b in java_bytes)
+            payload_len = len(payload)
+            payload = (((int.from_bytes(payload))<<8)>>2)
+            payload = payload.to_bytes(payload_len + 1, "big")
+            payload = payload[1:]
             e.printPayload(payload)
         else:
             payload = self.payload
