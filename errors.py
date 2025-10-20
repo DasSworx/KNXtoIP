@@ -108,7 +108,7 @@ def printBytes(bytes):
 
 def printIpAddressAsString(beginning, address_as_string):
     if int(config["Settings"]["verbose"]) > 3:
-        u.print_bytes_as_hex("Address as string is:" + beginning + "." + address_as_string)
+        print("Address as string is:" + beginning + "." + address_as_string)
 
 def sendingTestMessage(seq_nr):
     if int(config["Settings"]["verbose"]) > 3:
