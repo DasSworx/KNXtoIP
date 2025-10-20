@@ -18,6 +18,12 @@ from scapy.all import sniff
 config = configparser.ConfigParser()
 config.read("config.ini")
 
+if config["Settings"]["Mapper"] == "Test":
+    test_interface = test.boot_up_test_inport(config["Settings"]["inPort"], config["Settings"]["test_tun_net_address"])
+    Spammer = th.Thread(target = test.spammer)
+    Receiver_test_tun = th.Thread(target = u.receiver_silent, args = [test_interface])
+    Spammer.start()
+
 u_c.confirm_network_mask(config["Settings"]["outPort"])
 
 start_up_tun("IDS_tun", config["Settings"]["outPort"])

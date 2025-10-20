@@ -73,7 +73,7 @@ def choose_mapper(mapper_code):
         case "USB"|"usb":
             print("Mapper set to USB")
             return f.map_incoming_traffic_from_USB
-        case "Eth"|"eth"|"ETH":
+        case "Eth"|"eth"|"ETH"|"Test":
             return f.map_incoming_traffic_from_eth
     raise e.notAMapperError
 
