@@ -142,7 +142,7 @@ class KNX_IP_cEMI_Frame:
         int1 = device_address[0]
         int2 = device_address[1]
         address_as_string = f"{int1}.{int2}"
-        print("address as string is:" + beginning + "." + address_as_string)
+        e.printIpAddressAsString(beginning, address_as_string)
         return beginning + "." + address_as_string
     
     def get_knx_ip_len(self):

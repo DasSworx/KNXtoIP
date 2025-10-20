@@ -3,7 +3,7 @@ from scapy.sendrecv import send
 import util.util_general as u
 import KNX_Telegramme as t
 import errors as e
-from errors import newPacketMessage, packetSentMessage, newKNXTelegramMessage
+from errors import newPacketMessage, packetSentMessage, newKNXTelegramMessage, printBytes
 import os
 
 
@@ -18,7 +18,7 @@ def map_incoming_traffic_from_eth(surveiled_interface, receiver):
 
             if knx_ip_cEMI_frame is None:
                 raise e.payloadIsEmptyError
-            u.print_bytes_as_hex(knx_ip_cEMI_frame)
+            printBytes(knx_ip_cEMI_frame)
 
             telegram_as_IP = t.KNX_IP_cEMI_Frame(knx_ip_cEMI_frame).as_IP(receiver)
                         

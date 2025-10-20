@@ -102,6 +102,14 @@ def printPayload(payload):
         print("----Payload: ----")
         u.print_bytes_as_hex(payload)
 
+def printBytes(bytes):
+    if int(config["Settings"]["verbose"]) > 3:
+        u.print_bytes_as_hex(bytes)
+
+def printIpAddressAsString(beginning, address_as_string):
+    if int(config["Settings"]["verbose"]) > 3:
+        u.print_bytes_as_hex("Address as string is:" + beginning + "." + address_as_string)
+
 def sendingTestMessage(seq_nr):
     if int(config["Settings"]["verbose"]) > 3:
         print("Sending message" + str(seq_nr))
