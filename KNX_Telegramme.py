@@ -227,7 +227,7 @@ class KNX_IP_cEMI_Frame:
             cEMI_as_IP[IP].chksum = 0xFFFF
             return cEMI_as_IP
     
-    def extract_payload_from_java(java_bytes):
+    def extract_payload_from_java(self, java_bytes):
         payload = bytearray((b & 0xFF) for b in java_bytes)
         payload_len = len(payload)
         payload = (((int.from_bytes(payload))<<8)>>2)
