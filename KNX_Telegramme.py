@@ -99,8 +99,9 @@ class KNX_TP1_Telegram():
     def as_IP(self, network_address) -> Packet:
         knxpacket = IP(src = self.assamble_address(network_address, self.src), 
                        dst = self.assamble_address(network_address, self.dst), 
+                       flags = "DF",
                        ttl = self.hop_count) / UDP() / self.APDU
-
+        
         if self.checksum_is_valid():
             return knxpacket
         else:
@@ -217,8 +218,9 @@ class KNX_IP_cEMI_Frame:
 
         cEMI_as_IP = IP(src = self.assamble_address(network_address, self.src), 
                        dst = self.assamble_address(network_address, self.dst), 
+                       flags = "DF",
                        ttl = self.hop_count) / UDP() / payload
-        
+
         if mac_is_valid:
             return cEMI_as_IP
         else:
