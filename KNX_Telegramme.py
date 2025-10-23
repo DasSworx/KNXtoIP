@@ -2,6 +2,7 @@ from scapy.layers.inet import IP, TCP, UDP
 from scapy.packet import Packet
 import util.util_general as u
 from keystore_manager import get_keystore
+import keystore_manager as ksm
 from enum import Enum
 import errors as e
 
@@ -98,8 +99,9 @@ class KNX_TP1_Telegram():
     def as_IP(self, network_address) -> Packet:
         knxpacket = IP(src = self.assamble_address(network_address, self.src), 
                        dst = self.assamble_address(network_address, self.dst), 
+                       flags = "DF",
                        ttl = self.hop_count) / UDP() / self.APDU
-
+        
         if self.checksum_is_valid():
             return knxpacket
         else:
@@ -200,18 +202,36 @@ class KNX_IP_cEMI_Frame:
     
     def as_IP(self, network_address) -> Packet:
         e.printAPCI(self.APCI)
+        mac_is_valid = True
         if self.APCI == bytearray([0x03, 0xF1]):
             e.decryptingMessage()
-            java_bytes = get_keystore().decryptAndVerify1(self.cEMI_frame)
-            payload = bytearray((b & 0xFF) for b in java_bytes)
-            payload_len = len(payload)
-            payload = (((int.from_bytes(payload))<<8)>>2)
-            payload = payload.to_bytes(payload_len + 1, "big")
-            payload = payload[1:]
-            e.printPayload(payload)
+            try:
+                java_bytes = get_keystore().decryptAndVerify1(self.cEMI_frame)
+                payload = self.extract_payload_from_java(java_bytes)
+            except ksm.jpype.JClass("de.hu_berlin.keystore.KeystoreException"):
+                java_bytes = get_keystore().insDecrypt(self.cEMI_frame)
+                payload = self.extract_payload_from_java(java_bytes)
+                mac_is_valid = False
+            
         else:
             payload = self.payload
-        
-        return IP(src = self.assamble_address(network_address, self.src), 
+
+        cEMI_as_IP = IP(src = self.assamble_address(network_address, self.src), 
                        dst = self.assamble_address(network_address, self.dst), 
+                       flags = "DF",
                        ttl = self.hop_count) / UDP() / payload
+
+        if mac_is_valid:
+            return cEMI_as_IP
+        else:
+            cEMI_as_IP[IP].chksum = 0xFFFF
+            return cEMI_as_IP
+    
+    def extract_payload_from_java(self, java_bytes):
+        payload = bytearray((b & 0xFF) for b in java_bytes)
+        payload_len = len(payload)
+        payload = (((int.from_bytes(payload))<<8)>>2)
+        payload = payload.to_bytes(payload_len + 1, "big")
+        payload = payload[1:]
+        e.printPayload(payload)
+        return payload
