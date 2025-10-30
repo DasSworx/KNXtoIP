@@ -7,7 +7,7 @@ def ensure_jvm_up():
     if not jpype.isJVMStarted():
         jpype.startJVM(jpype.getDefaultJVMPath(),
                 "-Dsun.security.smartcardio.library=/lib/aarch64-linux-gnu/libpcsclite.so.1",
-                u.assable_java_path_for_jpype())
+                u.assemble_java_path_for_jpype())
     return jpype.isJVMStarted()
 
 def get_keystore():

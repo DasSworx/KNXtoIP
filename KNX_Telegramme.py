@@ -19,7 +19,7 @@ class KNX_TP1_Telegram():
         else:
             raise e.TelegramTypeNotSupportedError
         
-    def assamble_address(self, network, device_address):
+    def assemble_address(self, network, device_address):
         beginning = ".".join(network.split(".")[:2])
         int1 = device_address[0]
         int2 = device_address[1]
@@ -97,8 +97,8 @@ class KNX_TP1_Telegram():
         self.APDU = self.get_APDU()
     
     def as_IP(self, network_address) -> Packet:
-        knxpacket = IP(src = self.assamble_address(network_address, self.src), 
-                       dst = self.assamble_address(network_address, self.dst), 
+        knxpacket = IP(src = self.assemble_address(network_address, self.src), 
+                       dst = self.assemble_address(network_address, self.dst), 
                        flags = "DF",
                        ttl = self.hop_count) / UDP() / self.APDU
         
@@ -139,7 +139,7 @@ class Ack_Frame:
 
 class KNX_IP_cEMI_Frame:
 
-    def assamble_address(self, network, device_address):
+    def assemble_address(self, network, device_address):
         beginning = ".".join(network.split(".")[:2])
         int1 = device_address[0]
         int2 = device_address[1]
@@ -216,8 +216,8 @@ class KNX_IP_cEMI_Frame:
         else:
             payload = self.payload
 
-        cEMI_as_IP = IP(src = self.assamble_address(network_address, self.src), 
-                       dst = self.assamble_address(network_address, self.dst), 
+        cEMI_as_IP = IP(src = self.assemble_address(network_address, self.src), 
+                       dst = self.assemble_address(network_address, self.dst), 
                        flags = "DF",
                        ttl = self.hop_count) / UDP() / payload
 
