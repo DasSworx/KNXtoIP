@@ -38,7 +38,7 @@ def obtain_payload(package) -> bytearray:
         else:
             raise e.wrongUDPPortError
     else:
-        raise e.NotAPacketError
+        raise e.notAPacketError
     
 
 def is_L_Data_Standard_Frame(telegram):

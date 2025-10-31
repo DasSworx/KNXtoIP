@@ -17,7 +17,7 @@ class KNX_TP1_Telegram():
         elif u.is_L_Data_Extended_Frame(self.telegram_as_byte_array):
             return Type.EXTENDED
         else:
-            raise e.TelegramTypeNotSupportedError
+            raise e.telegramTypeNotSupportedError
         
     def assemble_address(self, network, device_address):
         beginning = ".".join(network.split(".")[:2])
@@ -49,7 +49,7 @@ class KNX_TP1_Telegram():
         elif self.type_of_telegram == Type.EXTENDED:
             return self.telegram_as_byte_array[2:4]
         else:
-            raise e.TelegramTypeNotSupportedError
+            raise e.telegramTypeNotSupportedError
         
     def get_dst(self):
         if self.type_of_telegram == Type.STANDARD:
@@ -57,7 +57,7 @@ class KNX_TP1_Telegram():
         elif self.type_of_telegram == Type.EXTENDED:
             return self.telegram_as_byte_array[4:6]
         else:
-            raise e.TelegramTypeNotSupportedError
+            raise e.telegramTypeNotSupportedError
     
     def get_hop_count(self):
         if self.type_of_telegram == Type.STANDARD:
@@ -67,7 +67,7 @@ class KNX_TP1_Telegram():
             byte = self.telegram_as_byte_array[1]
             return (byte >> 4) & 0b111
         else:
-            raise e.TelegramTypeNotSupportedError
+            raise e.telegramTypeNotSupportedError
     
     def get_data_len(self):
         if self.type_of_telegram == Type.STANDARD:
@@ -76,7 +76,7 @@ class KNX_TP1_Telegram():
         elif self.type_of_telegram == Type.EXTENDED:
             return self.telegram_as_byte_array[6]
         else:
-            raise e.TelegramTypeNotSupportedError
+            raise e.telegramTypeNotSupportedError
     
     def get_APDU(self):
             len_of_telegram = len(self.telegram_as_byte_array)

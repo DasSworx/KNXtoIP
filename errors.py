@@ -38,7 +38,7 @@ class cEMIFrameCouldNotBeMappedError(Exception):
 
 #INFO
 
-class NotAPacketError(Exception):
+class notAPacketError(Exception):
     def __init__(self):
         super().__init__()
         if int(config["Settings"]["verbose"]) > 2:
@@ -68,7 +68,7 @@ class wrongUDPPortError(Exception):
         if int(config["Settings"]["verbose"]) > 2:
             print("\n\tINFO: The port used by UDP does not belong to KNX")
 
-class TelegramTypeNotSupportedError(Exception):
+class telegramTypeNotSupportedError(Exception):
     def __init__(self):
         super().__init__()
         if int(config["Settings"]["verbose"]) > 2:

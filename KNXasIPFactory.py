@@ -59,7 +59,7 @@ def convert_KNX_to_IP(receiver_network, queue) -> Packet:
         try:
             telegram_as_IP = t.KNX_TP1_Telegram(queue.get()).as_IP(receiver_network)
             send(telegram_as_IP, verbose = 0)
-        except e.TelegramTypeNotSupportedError:
+        except e.telegramTypeNotSupportedError:
             continue
 
 def map_incoming_traffic_from_USB(usb_file, receiver):
